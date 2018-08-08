@@ -1,3 +1,7 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
 package tr.com.havelsan.summerschool.blogapp.domain;
 
@@ -15,6 +19,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -26,8 +31,8 @@ import javax.persistence.TemporalType;
  * @author User
  */
 @Entity
-@Table(name = "blog")
-public class Blog implements Serializable {
+@Table(name = "post")
+public class Post implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,31 +43,36 @@ public class Blog implements Serializable {
     @Column(name = "header")
     private String header;
     @Basic(optional = false)
-    @Column(name = "description")
-    private String description;
+    @Lob
+    @Column(name = "content")
+    private String content;
+    @Basic(optional = false)
     @Column(name = "create_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDate;
-
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "id", fetch = FetchType.LAZY)
-    private List<Post> postList;
-
+    @JoinColumn(name = "blog_id", referencedColumnName = "id")
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+    private Blog blog;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     private BlogUser blogUser;
 
-    public Blog() {
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "id", fetch = FetchType.LAZY)
+    private List<Comment> commentList;
+
+    public Post() {
     }
 
-    public Blog(Integer id) {
+    public Post(Integer id) {
         this.id = id;
     }
 
-    public Blog(Integer id, String header, String description) {
+    public Post(Integer id, String header, String content, Date createDate) {
         this.id = id;
         this.header = header;
-        this.description = description;
+        this.content = content;
+        this.createDate = createDate;
     }
 
     public Integer getId() {
@@ -81,12 +91,12 @@ public class Blog implements Serializable {
         this.header = header;
     }
 
-    public String getDescription() {
-        return description;
+    public String getContent() {
+        return content;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Date getCreateDate() {
@@ -97,12 +107,12 @@ public class Blog implements Serializable {
         this.createDate = createDate;
     }
 
-    public List<Post> getPostList() {
-        return postList;
+    public Blog getBlog() {
+        return blog;
     }
 
-    public void setPostList(List<Post> postList) {
-        this.postList = postList;
+    public void setBlog(Blog blog) {
+        this.blog = blog;
     }
 
     public BlogUser getBlogUser() {
@@ -111,6 +121,14 @@ public class Blog implements Serializable {
 
     public void setBlogUser(BlogUser blogUser) {
         this.blogUser = blogUser;
+    }
+
+    public List<Comment> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<Comment> commentList) {
+        this.commentList = commentList;
     }
 
     @Override
@@ -123,10 +141,10 @@ public class Blog implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Blog)) {
+        if (!(object instanceof Post)) {
             return false;
         }
-        Blog other = (Blog) object;
+        Post other = (Post) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -135,7 +153,7 @@ public class Blog implements Serializable {
 
     @Override
     public String toString() {
-        return "Blog[id=" + id + "]";
+        return "Post[id=" + id + "]";
     }
 
 }

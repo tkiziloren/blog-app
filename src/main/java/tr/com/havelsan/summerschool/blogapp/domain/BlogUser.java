@@ -1,3 +1,7 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
 package tr.com.havelsan.summerschool.blogapp.domain;
 
@@ -14,8 +18,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -26,8 +28,8 @@ import javax.persistence.TemporalType;
  * @author User
  */
 @Entity
-@Table(name = "blog")
-public class Blog implements Serializable {
+@Table(name = "blog_user")
+public class BlogUser implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,34 +37,43 @@ public class Blog implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "header")
-    private String header;
+    @Column(name = "email")
+    private String email;
     @Basic(optional = false)
-    @Column(name = "description")
-    private String description;
-    @Column(name = "create_date")
+    @Column(name = "password")
+    private String password;
+    @Basic(optional = false)
+    @Column(name = "name")
+    private String name;
+    @Basic(optional = false)
+    @Column(name = "register_date")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createDate;
+    private Date registerDate;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "id", fetch = FetchType.LAZY)
     private List<Post> postList;
 
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    private BlogUser blogUser;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "id", fetch = FetchType.LAZY)
+    private List<Comment> commentList;
 
-    public Blog() {
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "id", fetch = FetchType.LAZY)
+    private List<Blog> blogList;
+
+    public BlogUser() {
     }
 
-    public Blog(Integer id) {
+    public BlogUser(Integer id) {
         this.id = id;
     }
 
-    public Blog(Integer id, String header, String description) {
+    public BlogUser(Integer id, String email, String password, String name, char permission) {
         this.id = id;
-        this.header = header;
-        this.description = description;
+        this.email = email;
+        this.password = password;
+        this.name = name;
     }
 
     public Integer getId() {
@@ -73,28 +84,36 @@ public class Blog implements Serializable {
         this.id = id;
     }
 
-    public String getHeader() {
-        return header;
+    public String getEmail() {
+        return email;
     }
 
-    public void setHeader(String header) {
-        this.header = header;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getDescription() {
-        return description;
+    public String getPassword() {
+        return password;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public Date getCreateDate() {
-        return createDate;
+    public String getName() {
+        return name;
     }
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Date getRegisterDate() {
+        return registerDate;
+    }
+
+    public void setRegisterDate(Date registerDate) {
+        this.registerDate = registerDate;
     }
 
     public List<Post> getPostList() {
@@ -105,12 +124,20 @@ public class Blog implements Serializable {
         this.postList = postList;
     }
 
-    public BlogUser getBlogUser() {
-        return blogUser;
+    public List<Comment> getCommentList() {
+        return commentList;
     }
 
-    public void setBlogUser(BlogUser blogUser) {
-        this.blogUser = blogUser;
+    public void setCommentList(List<Comment> commentList) {
+        this.commentList = commentList;
+    }
+
+    public List<Blog> getBlogList() {
+        return blogList;
+    }
+
+    public void setBlogList(List<Blog> blogList) {
+        this.blogList = blogList;
     }
 
     @Override
@@ -123,10 +150,10 @@ public class Blog implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Blog)) {
+        if (!(object instanceof BlogUser)) {
             return false;
         }
-        Blog other = (Blog) object;
+        BlogUser other = (BlogUser) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -135,7 +162,7 @@ public class Blog implements Serializable {
 
     @Override
     public String toString() {
-        return "Blog[id=" + id + "]";
+        return "BlogUser[id=" + id + "]";
     }
 
 }
